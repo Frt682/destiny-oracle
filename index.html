@@ -67,6 +67,7 @@
         <a href="#today">Today</a>
         <a href="#reading">Reading</a>
         <a href="#synastry">Synastry</a>
+        <a href="#challenge">Challenge</a>
         <a href="astrology/">Signs</a>
       </div>
     </nav>
@@ -137,7 +138,10 @@
         </div>
         <div class="form-actions">
           <button class="btn" type="submit">Ask the oracle</button>
-          <p class="hint">Time and place raise model confidence. Readings save on this device.</p>
+          <p class="hint">Time and place raise confidence. Readings save on this device.</p>
+        </div>
+        <div class="swipe-cast" id="swipeCast" aria-hidden="true">
+          <span>Swipe up to cast</span>
         </div>
       </form>
 
@@ -164,12 +168,29 @@
           <div><h3>Ritual</h3><p id="ritual"></p></div>
           <div><h3>Lucky window</h3><p id="window"></p></div>
         </div>
+        <div class="annual" id="annualBlock">
+          <h3>Annual ritual</h3>
+          <p id="annualText" class="annual-text"></p>
+          <p class="hint" id="annualLock"></p>
+        </div>
         <div class="share-row">
           <button type="button" class="btn" id="cardBtn">Download story card</button>
           <button type="button" class="btn btn-ghost" id="shareBtn">Copy share link</button>
           <span class="hint" id="shareStatus" hidden></span>
         </div>
+        <p class="hint" id="referralHint"></p>
       </article>
+    </section>
+
+    <section class="reading" id="challenge">
+      <h2>#DestinyChallenge</h2>
+      <p class="lede" id="challengePrompt"></p>
+      <div class="challenge-row">
+        <button type="button" class="btn" id="challengeGo">Do today’s challenge</button>
+        <button type="button" class="btn btn-ghost" id="challengeShare">Copy challenge</button>
+        <span class="hint" id="challengeStatus"></span>
+      </div>
+      <p class="hint" id="challengeMeta"></p>
     </section>
 
     <section class="reading" id="synastry">

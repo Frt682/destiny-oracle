@@ -1,4 +1,4 @@
-const CACHE = "destinyoracle-v2";
+const CACHE = "destinyoracle-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -8,7 +8,9 @@ const ASSETS = [
   "./favicon.svg",
   "./share.html",
   "./privacy.html",
-  "./manifest.webmanifest"
+  "./manifest.webmanifest",
+  "./astrology/",
+  "./guides/birth-chart-reading.html"
 ];
 
 self.addEventListener("install", (event) => {

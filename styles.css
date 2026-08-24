@@ -216,8 +216,13 @@ a {
 
 .history-list {
   display: grid;
-  gap: 0.7rem;
+  gap: 1rem;
   margin-top: 1rem;
+}
+
+.history-row {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.85rem;
 }
 
 .history-item {
@@ -228,16 +233,106 @@ a {
   text-align: left;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid var(--line);
   color: var(--paper);
   font-family: var(--text);
   font-size: 0.95rem;
-  padding: 0.85rem 0;
+  padding: 0.55rem 0;
   cursor: pointer;
 }
 
 .history-item:hover {
   color: var(--gold);
+}
+
+.outcome-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.chip {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--mist);
+  font-family: var(--text);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--gold);
+  color: var(--paper);
+}
+
+.annual {
+  margin-top: 2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+  max-width: 42rem;
+}
+
+.annual h3 {
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+  margin-bottom: 0.45rem;
+}
+
+.annual-text {
+  font-family: var(--display);
+  font-size: 1.2rem;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.annual.locked .annual-text {
+  color: var(--mist);
+  filter: blur(0.4px);
+  opacity: 0.72;
+}
+
+.challenge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.swipe-cast {
+  display: none;
+  margin-top: 1.4rem;
+  padding: 1.1rem 0;
+  text-align: center;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--mist);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.swipe-cast.swiped {
+  color: var(--gold);
+}
+
+.result.reveal {
+  animation: rise 0.85s ease both;
+}
+
+@media (pointer: coarse) {
+  .swipe-cast {
+    display: block;
+  }
 }
 
 .foot a {

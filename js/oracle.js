@@ -392,7 +392,29 @@ export function sharePageUrl(payload) {
   return `${window.location.origin}${siteBase()}share.html?r=${token}`;
 }
 
-export function drawStoryCard(data) {
+export function downloadStoryCard(data) {
+  return drawStoryCard(data).then((canvas) => {
+    const a = document.createElement("a");
+    a.download = `destinyoracle-${data.sign.slug || data.sign.name.toLowerCase()}.png`;
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+  });
+}
+
+async function qrDataUrl(text) {
+  try {
+    const mod = await import("https://esm.sh/qrcode@1.5.4");
+    return mod.toDataURL(text, {
+      margin: 1,
+      width: 220,
+      color: { dark: "#c9a227ff", light: "#071318ff" }
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function drawStoryCard(data) {
   const w = 1080;
   const h = 1920;
   const canvas = document.createElement("canvas");
@@ -408,8 +430,8 @@ export function drawStoryCard(data) {
   ctx.fillRect(0, 0, w, h);
 
   for (let i = 0; i < 90; i += 1) {
-    const x = (hash32(`${data.id}-${i}`) % w);
-    const y = (hash32(`y${data.id}-${i}`) % h);
+    const x = hash32(`${data.id}-${i}`) % w;
+    const y = hash32(`y${data.id}-${i}`) % h;
     ctx.fillStyle = `rgba(243,234,216,${0.15 + (i % 5) * 0.08})`;
     ctx.beginPath();
     ctx.arc(x, y, 1.5 + (i % 3), 0, Math.PI * 2);
@@ -449,7 +471,13 @@ export function drawStoryCard(data) {
 
   ctx.fillStyle = "#f3ead8";
   ctx.font = "italic 44px Fraunces, serif";
-  const afterOracle = wrap(data.oracle.slice(0, 220) + (data.oracle.length > 220 ? "…" : ""), 80, 560, 920, 58);
+  const afterOracle = wrap(
+    data.oracle.slice(0, 220) + (data.oracle.length > 220 ? "…" : ""),
+    80,
+    560,
+    920,
+    58
+  );
 
   ctx.fillStyle = "#c9a227";
   ctx.font = "500 26px Sora, sans-serif";
@@ -460,22 +488,137 @@ export function drawStoryCard(data) {
 
   ctx.fillStyle = "#c9a227";
   ctx.font = "500 26px Sora, sans-serif";
-  ctx.fillText("LOVE  " + data.values.love + "   WORK  " + data.values.work + "   FORTUNE  " + data.values.fortune, 80, 1580);
+  ctx.fillText(
+    `LOVE  ${data.values.love}   WORK  ${data.values.work}   FORTUNE  ${data.values.fortune}`,
+    80,
+    1520
+  );
 
-  ctx.fillStyle = "#9bb8b4";
-  ctx.font = "400 28px Sora, sans-serif";
-  ctx.fillText("Read your own sky → frt682.github.io/destiny-oracle", 80, 1750);
-  ctx.fillText("#DestinyOracle", 80, 1810);
+  const shareUrl =
+    data.shareUrl ||
+    `https://frt682.github.io/destiny-oracle/`;
+  const qr = await qrDataUrl(shareUrl);
+  if (qr) {
+    const img = new Image();
+    img.src = qr;
+    await img.decode();
+    ctx.fillStyle = "#071318";
+    ctx.fillRect(80, 1580, 200, 200);
+    ctx.drawImage(img, 80, 1580, 200, 200);
+    ctx.fillStyle = "#9bb8b4";
+    ctx.font = "400 24px Sora, sans-serif";
+    ctx.fillText("Scan to read your own sky", 300, 1680);
+    ctx.fillText("#DestinyChallenge", 300, 1725);
+  } else {
+    ctx.fillStyle = "#9bb8b4";
+    ctx.font = "400 28px Sora, sans-serif";
+    ctx.fillText("Read your own sky → frt682.github.io/destiny-oracle", 80, 1680);
+    ctx.fillText("#DestinyOracle · #DestinyChallenge", 80, 1740);
+  }
 
   return canvas;
 }
 
-export function downloadStoryCard(data) {
-  const canvas = drawStoryCard(data);
-  const a = document.createElement("a");
-  a.download = `destinyoracle-${data.sign.slug || data.sign.name.toLowerCase()}.png`;
-  a.href = canvas.toDataURL("image/png");
-  a.click();
+export function annualRitualText(reading) {
+  const rand = rng(hash32(`annual|${reading.id}`));
+  const lines = [
+    `Across the next twelve months, ${reading.sign.name} is asked to keep one promise visible — not loud, just unbroken.`,
+    `Your life path ${reading.lifePath} favors a seasonal return: revisit this question at each equinox and rewrite one sentence.`,
+    pick(rand, [
+      "Winter: clear the ledger. Spring: name the desire. Summer: publish the craft. Autumn: keep only what still feels true.",
+      "Choose one room, one craft, one person. Give them more hours than your distractions receive.",
+      "The annual hinge is not a breakthrough — it is the day you stop leaving before the work is seen."
+    ])
+  ];
+  return lines.join(" ");
+}
+
+const REF_KEY = "destinyoracle_referral_v1";
+const EVENTS_KEY = "destinyoracle_events_v1";
+const CHALLENGE_KEY = "destinyoracle_challenge_v1";
+
+export function getReferral() {
+  try {
+    return JSON.parse(localStorage.getItem(REF_KEY) || '{"shares":0,"ids":[]}');
+  } catch {
+    return { shares: 0, ids: [] };
+  }
+}
+
+export function recordShare(readingId) {
+  const state = getReferral();
+  const key = `${readingId || "x"}|${new Date().toISOString().slice(0, 10)}`;
+  if (!state.ids.includes(key)) {
+    state.ids.push(key);
+    state.shares = (state.shares || 0) + 1;
+    state.ids = state.ids.slice(-40);
+    localStorage.setItem(REF_KEY, JSON.stringify(state));
+  }
+  trackEvent("share", { readingId });
+  return state;
+}
+
+export function annualUnlocked() {
+  const streak = getStreak();
+  const ref = getReferral();
+  return (ref.shares || 0) >= 3 || (streak.count || 0) >= 7 || Boolean(ref.unlocked);
+}
+
+export function forceUnlockAnnual() {
+  const state = getReferral();
+  state.unlocked = true;
+  localStorage.setItem(REF_KEY, JSON.stringify(state));
+}
+
+export function setReadingOutcome(id, outcome) {
+  const list = loadHistory();
+  const next = list.map((item) => (item.id === id ? { ...item, outcome } : item));
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+  trackEvent("outcome", { id, outcome });
+  return next;
+}
+
+export function todaysChallenge(date = new Date()) {
+  const prompts = [
+    "Cast a reading for a question you have been avoiding — then send the share link to one person who already knows the story.",
+    "Download today’s story card and post it with #DestinyChallenge — no caption longer than one sentence.",
+    "Run synastry with someone you trust. Keep only the counsel that stung a little.",
+    "Return to yesterday’s near weather. Mark whether it landed true, false, or still open.",
+    "Read your sign’s daily page, then cast a full chart. Compare the two skies in one note."
+  ];
+  const day = date.toISOString().slice(0, 10);
+  const rand = rng(hash32(`challenge|${day}`));
+  return {
+    day,
+    prompt: pick(rand, prompts),
+    hashtag: "#DestinyChallenge"
+  };
+}
+
+export function getChallengeState() {
+  try {
+    return JSON.parse(localStorage.getItem(CHALLENGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+export function completeChallenge(day) {
+  const state = getChallengeState();
+  state[day] = true;
+  localStorage.setItem(CHALLENGE_KEY, JSON.stringify(state));
+  trackEvent("challenge_complete", { day });
+  return state;
+}
+
+export function trackEvent(name, detail = {}) {
+  try {
+    const list = JSON.parse(localStorage.getItem(EVENTS_KEY) || "[]");
+    list.unshift({ name, detail, at: new Date().toISOString() });
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(list.slice(0, 200)));
+  } catch {
+    /* ignore */
+  }
 }
 
 export function chartSvg(reading) {
