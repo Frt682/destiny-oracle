@@ -309,6 +309,14 @@ a {
   animation: rise 1.2s ease 0.18s both;
 }
 
+.ai-badge {
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.85rem;
+}
+
 .hero h1 {
   font-family: var(--display);
   font-size: clamp(1.6rem, 3vw, 2.4rem);
