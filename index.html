@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DestinyOracle — Astrology with Machine Learning</title>
+  <meta name="description" content="DestinyOracle reads your birth sky with a pattern model trained on season, hour, and the question you carry.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Sora:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="sky" aria-hidden="true">
+    <canvas id="stars"></canvas>
+    <div class="veil"></div>
+    <svg class="constellation" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
+      <line x1="180" y1="160" x2="320" y2="210"/>
+      <line x1="320" y1="210" x2="410" y2="120"/>
+      <line x1="410" y1="120" x2="540" y2="190"/>
+      <line x1="540" y1="190" x2="620" y2="90"/>
+      <line x1="980" y1="240" x2="1100" y2="320"/>
+      <line x1="1100" y1="320" x2="1220" y2="260"/>
+      <line x1="1100" y1="320" x2="1180" y2="430"/>
+      <line x1="240" y1="620" x2="360" y2="540"/>
+      <line x1="360" y1="540" x2="490" y2="600"/>
+      <circle cx="180" cy="160" r="2.2"/>
+      <circle cx="320" cy="210" r="3"/>
+      <circle cx="410" cy="120" r="2"/>
+      <circle cx="540" cy="190" r="2.6"/>
+      <circle cx="620" cy="90" r="1.8"/>
+      <circle cx="980" cy="240" r="2"/>
+      <circle cx="1100" cy="320" r="3.2"/>
+      <circle cx="1220" cy="260" r="2"/>
+      <circle cx="1180" cy="430" r="2.4"/>
+      <circle cx="240" cy="620" r="2"/>
+      <circle cx="360" cy="540" r="2.8"/>
+      <circle cx="490" cy="600" r="2"/>
+    </svg>
+  </div>
+
+  <div class="site">
+    <nav class="nav">
+      <span>Est. in the long night</span>
+      <a href="#reading">Open a reading</a>
+    </nav>
+
+    <header class="hero">
+      <p class="brand">DestinyOracle</p>
+      <div class="hero-copy">
+        <h1>Your sky, trained on time.</h1>
+        <p>A machine-learning oracle that reads birth, hour, and the question you cannot put down — then returns a forecast you can actually use.</p>
+        <div class="cta">
+          <a class="btn" href="#reading">Begin a reading</a>
+          <a class="link" href="#method">How the model listens</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="reading" id="reading">
+      <h2>Cast your chart</h2>
+      <p class="lede">Enter the facts the sky already knows. The model maps sun sign, rising hour, and the pattern inside your question — then writes the season ahead.</p>
+
+      <form id="chart">
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" required autocomplete="name" placeholder="What you are called">
+        </div>
+        <div class="field">
+          <label for="place">Birth place</label>
+          <input id="place" name="place" type="text" placeholder="City, country">
+        </div>
+        <div class="field">
+          <label for="date">Birth date</label>
+          <input id="date" name="date" type="date" required>
+        </div>
+        <div class="field">
+          <label for="time">Birth time</label>
+          <input id="time" name="time" type="time">
+        </div>
+        <div class="field wide">
+          <label for="question">The question you carry</label>
+          <textarea id="question" name="question" placeholder="Love, work, money, health — or the path you will not name yet."></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="submit">Ask the oracle</button>
+          <p class="hint">Same inputs return the same sky. Time and place raise model confidence.</p>
+        </div>
+      </form>
+
+      <article class="result" id="result" aria-live="polite">
+        <h2>The reading</h2>
+        <div class="sign-row">
+          <div>
+            <p class="sign-name" id="signName"></p>
+            <p class="meta" id="signMeta"></p>
+          </div>
+          <div class="bars">
+            <div class="bar"><span>Love</span><div class="track"><div class="fill" data-fill="love"></div></div><span id="loveN"></span></div>
+            <div class="bar"><span>Work</span><div class="track"><div class="fill" data-fill="work"></div></div><span id="workN"></span></div>
+            <div class="bar"><span>Fortune</span><div class="track"><div class="fill" data-fill="fortune"></div></div><span id="fortuneN"></span></div>
+            <div class="bar"><span>Timing</span><div class="track"><div class="fill" data-fill="timing"></div></div><span id="timingN"></span></div>
+          </div>
+        </div>
+        <p class="oracle" id="oracle"></p>
+        <div class="chapters">
+          <div>
+            <h3>Near weather</h3>
+            <p id="near"></p>
+          </div>
+          <div>
+            <h3>This season</h3>
+            <p id="season"></p>
+          </div>
+          <div>
+            <h3>The year</h3>
+            <p id="year"></p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="method" id="method">
+      <h2>How the model listens</h2>
+      <p>DestinyOracle is not a horoscope mill. It treats your birth date as a seasonal feature, your hour as a rising vector, and your question as a classified intent. Those signals are hashed into a stable seed so the same life returns the same sky — the way a trained model should, not a coin toss.</p>
+      <p>The engine scores love, work, fortune, and timing from element, modality, and the language of what you asked. It is astrology with machine-learning discipline: pattern, memory, and a forecast you can reread. Entertainment, not fate. The sky is a mirror. You still walk.</p>
+    </section>
+
+    <footer class="foot">
+      <span>DestinyOracle</span>
+      <span>Astrology × machine learning</span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
