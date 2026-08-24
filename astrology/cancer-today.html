@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancer Horoscope Today · AI Astrology · DestinyOracle</title>
+  <meta name="description" content="Cancer (Jun 21 – Jul 22) daily sky report from DestinyOracle — English AI astrology for a global audience. Element: Water.">
+  <link rel="canonical" href="https://frt682.github.io/destiny-oracle/astrology/cancer-today.html">
+  <meta property="og:title" content="Cancer Horoscope Today · AI Astrology · DestinyOracle">
+  <meta property="og:description" content="Cancer (Jun 21 – Jul 22) daily sky report from DestinyOracle — English AI astrology for a global audience. Element: Water.">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article","headline":"Cancer Horoscope Today","inLanguage":"en","author":{"@type":"Organization","name":"DestinyOracle"},"dateModified":"2026-08-24"}
+  </script>
+  <link rel="stylesheet" href="../styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400&family=Sora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="site page">
+    <nav class="nav"><a href="../">DestinyOracle</a><a href="./">All signs</a></nav>
+    <p class="today-kicker">Daily sky · English · Global</p>
+    <h1>♋ Cancer today</h1>
+    <p class="meta">Jun 21 – Jul 22 · Water · Machine-learning pattern forecast</p>
+    <p class="oracle" id="brief">Depth over display. Fewer rooms, truer ones, slower food.</p>
+    <div class="chapters" style="margin-top:1.6rem">
+      <div><h3>Climate</h3><p id="climate">Loading personalized near weather…</p></div>
+      <div><h3>Season counsel</h3><p id="season"></p></div>
+      <div><h3>Ritual</h3><p id="ritual"></p></div>
+      <div><h3>Lucky window</h3><p id="window"></p></div>
+    </div>
+    <div class="cta" style="margin-top:2rem">
+      <a class="btn" href="../#reading">Cast your full chart</a>
+      <a class="link" href="../#synastry">Try synastry</a>
+    </div>
+  </div>
+  <script type="module">
+    import { signTodayReading } from '../js/oracle.js';
+    const r = signTodayReading('cancer');
+    document.getElementById('brief').textContent = r.brief;
+    document.getElementById('climate').textContent = r.climate + '. Moon: ' + r.moon + '.';
+    document.getElementById('season').textContent = r.season;
+    document.getElementById('ritual').textContent = r.ritual;
+    document.getElementById('window').textContent = r.window;
+  </script>
+</body>
+</html>

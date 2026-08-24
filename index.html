@@ -3,9 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DestinyOracle — Astrology with Machine Learning</title>
-  <meta name="description" content="DestinyOracle reads your birth sky with a pattern model trained on season, hour, and the question you carry.">
+  <title>DestinyOracle — AI Astrology Readings for a Global Sky</title>
+  <meta name="description" content="DestinyOracle is an English, global astrology oracle powered by machine-learning pattern logic. Cast a chart, share a story card, compare two skies.">
+  <meta name="theme-color" content="#071318">
+  <link rel="canonical" href="https://frt682.github.io/destiny-oracle/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <meta property="og:title" content="DestinyOracle — Your sky, trained on time">
+  <meta property="og:description" content="Machine-learning astrology readings. Share story cards. Compare charts. English for a global audience.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://frt682.github.io/destiny-oracle/">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "DestinyOracle",
+    "url": "https://frt682.github.io/destiny-oracle/",
+    "applicationCategory": "LifestyleApplication",
+    "inLanguage": "en",
+    "description": "AI-pattern astrology readings with shareable story cards and synastry."
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Sora:wght@400;500&display=swap" rel="stylesheet">
@@ -42,10 +62,12 @@
 
   <div class="site">
     <nav class="nav">
-      <span>Est. in the long night</span>
+      <span>English · Global</span>
       <div class="nav-links">
         <a href="#today">Today</a>
         <a href="#reading">Reading</a>
+        <a href="#synastry">Synastry</a>
+        <a href="astrology/">Signs</a>
       </div>
     </nav>
 
@@ -53,11 +75,13 @@
       <p class="brand">DestinyOracle</p>
       <div class="hero-copy">
         <h1>Your sky, trained on time.</h1>
-        <p>A machine-learning oracle that reads birth, hour, and the question you cannot put down — then returns a forecast you can actually use.</p>
+        <p>An English astrology oracle for a global audience — birth, hour, and the question you carry, mapped by a machine-learning pattern model into a forecast you can share.</p>
         <div class="cta">
           <a class="btn" href="#reading">Begin a reading</a>
           <a class="link" href="#method">How the model listens</a>
         </div>
+        <p class="proof" id="socialProof"></p>
+        <p class="streak" id="streakStat"></p>
       </div>
     </header>
 
@@ -79,11 +103,12 @@
           <strong id="todayMoon"></strong>
         </div>
       </div>
+      <p class="hint"><a class="link" href="astrology/">Browse daily sign pages</a> for SEO-ready sky reports.</p>
     </section>
 
     <section class="reading" id="reading">
       <h2>Cast your chart</h2>
-      <p class="lede">Enter the facts the sky already knows. The model maps sun sign, rising hour, and the pattern inside your question — then writes the season ahead.</p>
+      <p class="lede">Enter the facts the sky already knows. Same inputs return the same sky — deterministic, shareable, global.</p>
 
       <form id="chart">
         <div class="field">
@@ -101,6 +126,10 @@
         <div class="field">
           <label for="time">Birth time</label>
           <input id="time" name="time" type="time">
+          <label class="check">
+            <input id="unknownTime" name="unknownTime" type="checkbox" value="1">
+            Birth time unknown
+          </label>
         </div>
         <div class="field wide">
           <label for="question">The question you carry</label>
@@ -108,7 +137,7 @@
         </div>
         <div class="form-actions">
           <button class="btn" type="submit">Ask the oracle</button>
-          <p class="hint">Same inputs return the same sky. Time and place raise model confidence.</p>
+          <p class="hint">Time and place raise model confidence. Readings save on this device.</p>
         </div>
       </form>
 
@@ -118,6 +147,7 @@
           <div>
             <p class="sign-name" id="signName"></p>
             <p class="meta" id="signMeta"></p>
+            <div id="chartMount" class="chart-mount"></div>
           </div>
           <div class="bars">
             <div class="bar"><span>Love</span><div class="track"><div class="fill" data-fill="love"></div></div><span id="loveN"></span></div>
@@ -128,46 +158,73 @@
         </div>
         <p class="oracle" id="oracle"></p>
         <div class="chapters">
-          <div>
-            <h3>Near weather</h3>
-            <p id="near"></p>
-          </div>
-          <div>
-            <h3>This season</h3>
-            <p id="season"></p>
-          </div>
-          <div>
-            <h3>The year</h3>
-            <p id="year"></p>
-          </div>
-          <div>
-            <h3>Ritual</h3>
-            <p id="ritual"></p>
-          </div>
-          <div>
-            <h3>Lucky window</h3>
-            <p id="window"></p>
-          </div>
+          <div><h3>Near weather</h3><p id="near"></p></div>
+          <div><h3>This season</h3><p id="season"></p></div>
+          <div><h3>The year</h3><p id="year"></p></div>
+          <div><h3>Ritual</h3><p id="ritual"></p></div>
+          <div><h3>Lucky window</h3><p id="window"></p></div>
         </div>
         <div class="share-row">
+          <button type="button" class="btn" id="cardBtn">Download story card</button>
           <button type="button" class="btn btn-ghost" id="shareBtn">Copy share link</button>
-          <span class="hint" id="shareStatus" hidden>Link copied.</span>
+          <span class="hint" id="shareStatus" hidden></span>
         </div>
       </article>
+    </section>
+
+    <section class="reading" id="synastry">
+      <h2>Synastry</h2>
+      <p class="lede">Compare two birth dates. Friends and partners send this to each other — the viral loop that grows a global oracle.</p>
+      <form id="synastryForm">
+        <div class="field">
+          <label for="a_name">Your name</label>
+          <input id="a_name" name="a_name" required placeholder="You">
+        </div>
+        <div class="field">
+          <label for="a_date">Your birth date</label>
+          <input id="a_date" name="a_date" type="date" required>
+        </div>
+        <div class="field">
+          <label for="b_name">Their name</label>
+          <input id="b_name" name="b_name" required placeholder="Them">
+        </div>
+        <div class="field">
+          <label for="b_date">Their birth date</label>
+          <input id="b_date" name="b_date" type="date" required>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="submit">Compare skies</button>
+        </div>
+      </form>
+      <article class="result" id="synastryResult">
+        <p class="sign-name" id="synastryPair"></p>
+        <p class="meta" id="synastryBond"></p>
+        <p class="oracle" id="synastryCounsel"></p>
+      </article>
+    </section>
+
+    <section class="reading" id="history">
+      <h2>On this device</h2>
+      <p class="lede">Past readings stay in your browser — no account required. Mark your streak by returning each day.</p>
+      <div id="historyList" class="history-list"></div>
     </section>
 
     <section class="method" id="method">
       <h2>How the model listens</h2>
       <p>DestinyOracle is not a horoscope mill. It treats your birth date as a seasonal feature, your hour as a rising vector, and your question as a classified intent. Those signals are hashed into a stable seed so the same life returns the same sky — the way a trained model should, not a coin toss.</p>
-      <p>The engine scores love, work, fortune, and timing from element, modality, and the language of what you asked. It is astrology with machine-learning discipline: pattern, memory, and a forecast you can reread. Entertainment, not fate. The sky is a mirror. You still walk.</p>
+      <p>Built in English for a worldwide audience. Entertainment, not fate. The sky is a mirror. You still walk.</p>
     </section>
 
     <footer class="foot">
-      <span>DestinyOracle</span>
-      <span>Astrology × machine learning</span>
+      <span>DestinyOracle · EN · Global</span>
+      <span>
+        <a href="astrology/">Signs</a> ·
+        <a href="guides/ai-astrology.html">Guides</a> ·
+        <a href="privacy.html">Privacy</a>
+      </span>
     </footer>
   </div>
 
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

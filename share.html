@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shared reading · DestinyOracle</title>
+  <meta name="description" content="A shared DestinyOracle reading. Discover your own sky next.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,400&family=Sora:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><canvas id="stars"></canvas><div class="veil"></div></div>
+  <div class="site page">
+    <nav class="nav">
+      <a href="./">DestinyOracle</a>
+      <span>Shared reading</span>
+    </nav>
+    <p class="today-kicker">A friend opened the sky for you</p>
+    <h1 id="title">Loading…</h1>
+    <p class="meta" id="meta"></p>
+    <p class="oracle" id="oracle"></p>
+    <p class="lede" id="near"></p>
+    <div class="cta" style="margin-top:2rem">
+      <a class="btn" href="./#reading">Read your own destiny</a>
+      <button type="button" class="btn btn-ghost" id="cardBtn">Download their story card</button>
+    </div>
+  </div>
+  <script type="module">
+    import { decodeReading, readingFrom, downloadStoryCard } from "./js/oracle.js";
+    const token = new URLSearchParams(location.search).get("r");
+    const payload = token ? decodeReading(token) : null;
+    if (!payload?.date) {
+      document.getElementById("title").textContent = "This reading link is incomplete.";
+      document.getElementById("oracle").textContent = "Ask your friend to share again, or cast your own chart.";
+    } else {
+      const data = readingFrom(payload);
+      document.title = `${data.name}'s ${data.sign.name} reading · DestinyOracle`;
+      document.getElementById("title").textContent = `${data.sign.glyph} ${data.name}'s sky`;
+      document.getElementById("meta").textContent = `${data.sign.name} · Rising ${data.rising.name} · ${data.confidence}% confidence`;
+      document.getElementById("oracle").textContent = data.oracle;
+      document.getElementById("near").textContent = data.near;
+      document.getElementById("cardBtn").onclick = () => downloadStoryCard(data);
+    }
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+    function resize(){ canvas.width = innerWidth * devicePixelRatio; canvas.height = innerHeight * devicePixelRatio; }
+    resize(); addEventListener("resize", resize);
+    (function tick(t){
+      ctx.fillStyle="#071318"; ctx.fillRect(0,0,canvas.width,canvas.height);
+      for(let i=0;i<80;i++){ const a=.2+Math.abs(Math.sin(t*0.001+i))*.6; ctx.fillStyle=`rgba(243,234,216,${a})`; ctx.beginPath(); ctx.arc((i*97)%canvas.width,(i*53)%canvas.height,1.2*devicePixelRatio,0,6.3); ctx.fill(); }
+      requestAnimationFrame(tick);
+    })(0);
+  </script>
+</body>
+</html>

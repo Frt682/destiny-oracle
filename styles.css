@@ -173,6 +173,115 @@ a {
   align-items: center;
   gap: 1rem;
   margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.proof, .streak {
+  margin-top: 1rem;
+  color: var(--mist);
+  font-size: 0.9rem;
+}
+
+.streak {
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--mist);
+  cursor: pointer;
+}
+
+.check input {
+  width: auto;
+  accent-color: var(--gold);
+}
+
+.chart-mount {
+  margin-top: 1.2rem;
+  max-width: 220px;
+}
+
+.chart-svg {
+  width: 100%;
+  height: auto;
+}
+
+.history-list {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--paper);
+  font-family: var(--text);
+  font-size: 0.95rem;
+  padding: 0.85rem 0;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  color: var(--gold);
+}
+
+.foot a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.foot a:hover {
+  border-bottom-color: var(--gold);
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  padding: 2rem 6vw 4rem;
+  max-width: 48rem;
+}
+
+.page h1 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  margin: 1rem 0 0.6rem;
+}
+
+.sign-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.8rem 1.2rem;
+  margin: 2rem 0;
+}
+
+.sign-grid a {
+  color: var(--paper);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.35rem;
+}
+
+.sign-grid a:hover {
+  border-bottom-color: var(--gold);
+  color: var(--gold);
 }
 
 .hero {

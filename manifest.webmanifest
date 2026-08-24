@@ -1,0 +1,19 @@
+{
+  "name": "DestinyOracle",
+  "short_name": "DestinyOracle",
+  "description": "English AI astrology oracle for a global audience",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#071318",
+  "theme_color": "#071318",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
