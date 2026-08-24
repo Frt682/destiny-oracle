@@ -27,40 +27,161 @@ let lastPayload = null;
 function paintSky(canvas) {
   const ctx = canvas.getContext("2d");
   const stars = [];
+  const dust = [];
+  const mouse = { x: 0.5, y: 0.35, tx: 0.5, ty: 0.35 };
+  const map = document.querySelector(".constellation");
 
   function resize() {
     canvas.width = window.innerWidth * devicePixelRatio;
     canvas.height = window.innerHeight * devicePixelRatio;
     stars.length = 0;
-    const count = Math.floor((canvas.width * canvas.height) / 14000);
+    dust.length = 0;
+    const count = Math.floor((canvas.width * canvas.height) / 11000);
     for (let i = 0; i < count; i += 1) {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 1.4 * devicePixelRatio,
+        r: (0.6 + Math.random() * 1.8) * devicePixelRatio,
         p: Math.random() * Math.PI * 2,
-        s: 0.4 + Math.random() * 1.6
+        s: 0.35 + Math.random() * 1.8,
+        depth: 0.25 + Math.random() * 0.9
+      });
+    }
+    for (let i = 0; i < 40; i += 1) {
+      dust.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        v: (0.08 + Math.random() * 0.22) * devicePixelRatio,
+        a: 0.08 + Math.random() * 0.18
       });
     }
   }
 
+  window.addEventListener(
+    "pointermove",
+    (event) => {
+      mouse.tx = event.clientX / window.innerWidth;
+      mouse.ty = event.clientY / window.innerHeight;
+    },
+    { passive: true }
+  );
+
   function tick(t) {
+    mouse.x += (mouse.tx - mouse.x) * 0.06;
+    mouse.y += (mouse.ty - mouse.y) * 0.06;
+    const ox = (mouse.x - 0.5) * 36 * devicePixelRatio;
+    const oy = (mouse.y - 0.5) * 28 * devicePixelRatio;
+
+    if (map) {
+      map.style.transform = `translate(${(mouse.x - 0.5) * -18}px, ${(mouse.y - 0.5) * -12}px)`;
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#071318";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const nebula = ctx.createRadialGradient(
+      canvas.width * mouse.x,
+      canvas.height * mouse.y * 0.85,
+      0,
+      canvas.width * mouse.x,
+      canvas.height * mouse.y * 0.85,
+      canvas.width * 0.55
+    );
+    nebula.addColorStop(0, "rgba(28, 90, 88, 0.18)");
+    nebula.addColorStop(0.55, "rgba(212, 120, 58, 0.05)");
+    nebula.addColorStop(1, "rgba(7, 19, 24, 0)");
+    ctx.fillStyle = nebula;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    dust.forEach((d) => {
+      d.y += d.v;
+      if (d.y > canvas.height) d.y = 0;
+      ctx.fillStyle = `rgba(243, 234, 216, ${d.a})`;
+      ctx.fillRect(d.x + ox * 0.15, d.y, devicePixelRatio, devicePixelRatio);
+    });
+
+    const near = [];
     stars.forEach((star) => {
-      const a = 0.25 + Math.abs(Math.sin(t * 0.001 * star.s + star.p)) * 0.7;
+      const px = star.x + ox * star.depth;
+      const py = star.y + oy * star.depth;
+      const a = 0.22 + Math.abs(Math.sin(t * 0.001 * star.s + star.p)) * 0.75;
       ctx.beginPath();
       ctx.fillStyle = `rgba(243, 234, 216, ${a})`;
-      ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+      ctx.arc(px, py, star.r, 0, Math.PI * 2);
       ctx.fill();
+      const mx = mouse.x * canvas.width;
+      const my = mouse.y * canvas.height;
+      const dx = px - mx;
+      const dy = py - my;
+      if (dx * dx + dy * dy < (140 * devicePixelRatio) ** 2) near.push({ x: px, y: py });
     });
+
+    ctx.strokeStyle = "rgba(201, 162, 39, 0.22)";
+    ctx.lineWidth = devicePixelRatio;
+    for (let i = 0; i < near.length; i += 1) {
+      for (let j = i + 1; j < near.length; j += 1) {
+        const dx = near[i].x - near[j].x;
+        const dy = near[i].y - near[j].y;
+        if (dx * dx + dy * dy < (110 * devicePixelRatio) ** 2) {
+          ctx.beginPath();
+          ctx.moveTo(near[i].x, near[i].y);
+          ctx.lineTo(near[j].x, near[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
     requestAnimationFrame(tick);
   }
 
   resize();
   window.addEventListener("resize", resize);
   requestAnimationFrame(tick);
+}
+
+function haptic(pattern = [12, 40, 18]) {
+  try {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+  } catch {
+    /* ignore */
+  }
+}
+
+const RITUAL_LINES = [
+  "Aligning birth, hour, and question…",
+  "Reading the season in your chart…",
+  "Holding the sky still for a moment…"
+];
+
+function runRitual() {
+  return new Promise((resolve) => {
+    const overlay = document.getElementById("ritualOverlay");
+    const copy = document.getElementById("ritualCopy");
+    if (!overlay) {
+      resolve();
+      return;
+    }
+    let i = 0;
+    overlay.hidden = false;
+    copy.textContent = RITUAL_LINES[0];
+    haptic([8, 30, 8]);
+    const timer = setInterval(() => {
+      i += 1;
+      if (i < RITUAL_LINES.length) copy.textContent = RITUAL_LINES[i];
+    }, 750);
+    setTimeout(() => {
+      clearInterval(timer);
+      overlay.hidden = true;
+      resolve();
+    }, 2400);
+  });
+}
+
+function setThumbDock(open) {
+  const dock = document.getElementById("thumbDock");
+  if (!dock) return;
+  dock.hidden = !open;
 }
 
 function renderToday() {
@@ -145,6 +266,8 @@ function renderReading(data, scroll = true) {
   renderAnnual(data);
   fillBars(data.values);
   renderReferralHint();
+  setThumbDock(true);
+  haptic([10, 35, 16, 25, 28]);
   trackEvent("reading_view", { sign: data.sign.name, id: data.id });
   if (scroll) box.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -222,8 +345,11 @@ function flash(el, text) {
   if (!el) return;
   el.hidden = false;
   el.textContent = text;
+  el.classList.add("flash-ok");
+  haptic(10);
   setTimeout(() => {
     el.hidden = true;
+    el.classList.remove("flash-ok");
   }, 2200);
 }
 
@@ -320,10 +446,11 @@ document.addEventListener("DOMContentLoaded", () => {
     renderReading(readingFrom(lastPayload), false);
   }
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const payload = formPayload(form);
     lastPayload = payload;
+    await runRitual();
     const data = readingFrom(payload);
     saveReading(data);
     renderReading(data);
@@ -337,6 +464,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("shareBtn")?.addEventListener("click", () => onShare("link"));
   document.getElementById("cardBtn")?.addEventListener("click", () => onShare("card"));
+  document.getElementById("dockShare")?.addEventListener("click", () => onShare("link"));
+  document.getElementById("dockCard")?.addEventListener("click", () => onShare("card"));
 
   document.getElementById("synastryForm")?.addEventListener("submit", (event) => {
     event.preventDefault();

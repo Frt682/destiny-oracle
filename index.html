@@ -60,6 +60,12 @@
     </svg>
   </div>
 
+  <div class="ritual" id="ritualOverlay" hidden>
+    <div class="ritual-orb" aria-hidden="true"></div>
+    <p class="ritual-kicker">The sky is listening</p>
+    <p class="ritual-copy" id="ritualCopy">Aligning birth, hour, and question…</p>
+  </div>
+
   <div class="site">
     <nav class="nav">
       <span>English · Global</span>
@@ -151,16 +157,18 @@
           <div>
             <p class="sign-name" id="signName"></p>
             <p class="meta" id="signMeta"></p>
-            <div id="chartMount" class="chart-mount"></div>
+            <div id="chartMount" class="chart-mount chart-frame"></div>
           </div>
-          <div class="bars">
+          <div class="bars bars-panel">
             <div class="bar"><span>Love</span><div class="track"><div class="fill" data-fill="love"></div></div><span id="loveN"></span></div>
             <div class="bar"><span>Work</span><div class="track"><div class="fill" data-fill="work"></div></div><span id="workN"></span></div>
             <div class="bar"><span>Fortune</span><div class="track"><div class="fill" data-fill="fortune"></div></div><span id="fortuneN"></span></div>
             <div class="bar"><span>Timing</span><div class="track"><div class="fill" data-fill="timing"></div></div><span id="timingN"></span></div>
           </div>
         </div>
-        <p class="oracle" id="oracle"></p>
+        <div class="oracle-panel">
+          <p class="oracle" id="oracle"></p>
+        </div>
         <div class="chapters">
           <div><h3>Near weather</h3><p id="near"></p></div>
           <div><h3>This season</h3><p id="season"></p></div>
@@ -247,5 +255,9 @@
   </div>
 
   <script type="module" src="app.js"></script>
+  <div class="thumb-dock" id="thumbDock" hidden>
+    <button type="button" class="btn" id="dockCard">Story card</button>
+    <button type="button" class="btn btn-ghost" id="dockShare">Share link</button>
+  </div>
 </body>
 </html>

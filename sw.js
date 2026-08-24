@@ -1,4 +1,4 @@
-const CACHE = "destinyoracle-v3";
+const CACHE = "destinyoracle-v4";
 const ASSETS = [
   "./",
   "./index.html",
