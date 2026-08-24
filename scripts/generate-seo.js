@@ -58,8 +58,8 @@ ${indexLinks}
 );
 
 for (const [slug, name, glyph, element, dates] of signs) {
-  const title = `${name} Horoscope Today · AI Astrology · DestinyOracle`;
-  const desc = `${name} (${dates}) daily sky report from DestinyOracle — English AI astrology for a global audience. Element: ${element}.`;
+  const title = `${name} Horoscope Today · DestinyOracle`;
+  const desc = `${name} (${dates}) daily sky report from DestinyOracle — English astrology for a global audience. Element: ${element}.`;
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,7 +81,7 @@ for (const [slug, name, glyph, element, dates] of signs) {
     <nav class="nav"><a href="../">DestinyOracle</a><a href="./">All signs</a></nav>
     <p class="today-kicker">Daily sky · English · Global</p>
     <h1>${glyph} ${name} today</h1>
-    <p class="meta">${dates} · ${element} · Machine-learning pattern forecast</p>
+    <p class="meta">${dates} · ${element} · Daily sky forecast</p>
     <p class="oracle" id="brief">${blurbs[element]}</p>
     <div class="chapters" style="margin-top:1.6rem">
       <div><h3>Climate</h3><p id="climate">Loading personalized near weather…</p></div>
@@ -112,7 +112,7 @@ const base = "https://frt682.github.io/destiny-oracle";
 const urls = [
   "",
   "/privacy.html",
-  "/guides/ai-astrology.html",
+  "/guides/birth-chart-reading.html",
   "/astrology/",
   ...signs.map(([slug]) => `/astrology/${slug}-today.html`)
 ];

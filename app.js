@@ -95,7 +95,7 @@ function renderReading(data, scroll = true) {
   document.getElementById("signName").textContent = `${data.sign.glyph} ${data.sign.name}`;
   document.getElementById("signMeta").innerHTML =
     `${data.sign.element} · ${data.sign.modality} · Life path ${data.lifePath}<br>` +
-    `Rising ${data.rising.name}${data.unknownTime ? " (approx.)" : ""} · Model confidence ${data.confidence}%<br>` +
+    `Rising ${data.rising.name}${data.unknownTime ? " (approx.)" : ""} · Confidence ${data.confidence}%<br>` +
     `Climate: ${data.climate}.`;
   document.getElementById("chartMount").innerHTML = chartSvg(data);
   document.getElementById("oracle").textContent = data.oracle;

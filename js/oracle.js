@@ -418,7 +418,7 @@ export function drawStoryCard(data) {
 
   ctx.fillStyle = "#c9a227";
   ctx.font = "500 28px Sora, sans-serif";
-  ctx.fillText("DESTINYORACLE · AI ASTROLOGY", 80, 140);
+  ctx.fillText("DESTINYORACLE", 80, 140);
 
   ctx.fillStyle = "#f3ead8";
   ctx.font = "italic 120px Fraunces, serif";
