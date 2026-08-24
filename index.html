@@ -43,7 +43,10 @@
   <div class="site">
     <nav class="nav">
       <span>Est. in the long night</span>
-      <a href="#reading">Open a reading</a>
+      <div class="nav-links">
+        <a href="#today">Today</a>
+        <a href="#reading">Reading</a>
+      </div>
     </nav>
 
     <header class="hero">
@@ -57,6 +60,26 @@
         </div>
       </div>
     </header>
+
+    <section class="today" id="today">
+      <p class="today-kicker" id="todayDate"></p>
+      <h2>Sky for today</h2>
+      <p class="lede" id="todayBrief"></p>
+      <div class="today-meta">
+        <div>
+          <span class="today-label">Transit tone</span>
+          <strong id="todayTone"></strong>
+        </div>
+        <div>
+          <span class="today-label">Best window</span>
+          <strong id="todayWindow"></strong>
+        </div>
+        <div>
+          <span class="today-label">Moon phase</span>
+          <strong id="todayMoon"></strong>
+        </div>
+      </div>
+    </section>
 
     <section class="reading" id="reading">
       <h2>Cast your chart</h2>
@@ -117,6 +140,18 @@
             <h3>The year</h3>
             <p id="year"></p>
           </div>
+          <div>
+            <h3>Ritual</h3>
+            <p id="ritual"></p>
+          </div>
+          <div>
+            <h3>Lucky window</h3>
+            <p id="window"></p>
+          </div>
+        </div>
+        <div class="share-row">
+          <button type="button" class="btn btn-ghost" id="shareBtn">Copy share link</button>
+          <span class="hint" id="shareStatus" hidden>Link copied.</span>
         </div>
       </article>
     </section>

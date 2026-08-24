@@ -192,9 +192,79 @@ function insightFor(focus, sign, rising, rand) {
   return `${map[focus]} ${pick(rand, extra)}`;
 }
 
+const RITUALS = {
+  Fire: [
+    "Speak one unfinished sentence into the open air, then act on the first half of it before noon.",
+    "Light a single flame, name what you want, and put the phone face-down for twenty minutes."
+  ],
+  Earth: [
+    "Clear one surface completely. Put only the next true task on it.",
+    "Write three numbers: money in, money out, hours left this week. Adjust one."
+  ],
+  Air: [
+    "Draft the message you have been rehearsing. Send the shorter version.",
+    "Walk without headphones and collect three sentences you overhear. Keep one."
+  ],
+  Water: [
+    "Write a letter you will not send. Burn or bury the last line.",
+    "Drink water slowly. Name the feeling under the feeling. Do not fix it yet."
+  ]
+};
+
+const WINDOWS = [
+  "Dawn to mid-morning — before the room fills with other people's urgency.",
+  "Late afternoon — when the day softens and decisions land cleaner.",
+  "The hour after sunset — good for confession, craft, and quiet yeses.",
+  "Near midnight — for planning only; do not negotiate love or money then."
+];
+
+const TODAY_BRIEFS = [
+  "The model reads a high-signal day: fewer meetings, clearer asks, one finished loop beats ten starts.",
+  "A soft sky. Protect attention. What you refuse today becomes tomorrow's advantage.",
+  "Pressure is useful if you aim it. Pick one stubborn problem and apply heat for forty minutes.",
+  "Conversations carry more weight than calendars. Listen for the sentence that rearranges the week.",
+  "The pattern favors repair: a broken edge, a late reply, a body that wants slower food."
+];
+
+const TODAY_TONES = ["Initiating", "Stabilizing", "Communicating", "Deepening", "Expanding", "Structuring"];
+
 function dayOfCycle(date) {
   const start = new Date(date.getFullYear(), 0, 0);
   return Math.floor((date - start) / 86400000);
+}
+
+function moonPhase(date) {
+  const synodic = 29.53058867;
+  const known = new Date("2000-01-06T18:14:00Z").getTime();
+  const days = (date.getTime() - known) / 86400000;
+  const age = ((days % synodic) + synodic) % synodic;
+  if (age < 1.85) return "New moon";
+  if (age < 7.38) return "Waxing crescent";
+  if (age < 9.23) return "First quarter";
+  if (age < 14.77) return "Waxing gibbous";
+  if (age < 16.61) return "Full moon";
+  if (age < 22.15) return "Waning gibbous";
+  if (age < 24.0) return "Last quarter";
+  return "Waning crescent";
+}
+
+function todaysSky() {
+  const now = new Date();
+  const seed = hash32(now.toISOString().slice(0, 10));
+  const rand = rng(seed);
+  const sign = sunSign(now);
+  return {
+    dateLabel: now.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    }),
+    brief: pick(rand, TODAY_BRIEFS),
+    tone: `${pick(rand, TODAY_TONES)} · ${sign.name} season`,
+    window: pick(rand, WINDOWS),
+    moon: moonPhase(now)
+  };
 }
 
 function readingFrom(input) {
@@ -222,6 +292,8 @@ function readingFrom(input) {
     near: pick(rand, theme.near),
     season: pick(rand, theme.season),
     year: pick(rand, theme.year),
+    ritual: pick(rand, RITUALS[sign.element]),
+    window: pick(rand, WINDOWS),
     climate: theme.climate
   };
 }
@@ -265,7 +337,18 @@ function paintSky(canvas) {
   requestAnimationFrame(tick);
 }
 
-function renderReading(data) {
+let lastPayload = null;
+
+function renderToday() {
+  const sky = todaysSky();
+  document.getElementById("todayDate").textContent = sky.dateLabel;
+  document.getElementById("todayBrief").textContent = sky.brief;
+  document.getElementById("todayTone").textContent = sky.tone;
+  document.getElementById("todayWindow").textContent = sky.window;
+  document.getElementById("todayMoon").textContent = sky.moon;
+}
+
+function renderReading(data, scroll = true) {
   const box = document.getElementById("result");
   box.classList.add("open");
   document.getElementById("signName").textContent = `${data.sign.glyph} ${data.sign.name}`;
@@ -275,6 +358,8 @@ function renderReading(data) {
   document.getElementById("near").textContent = data.near;
   document.getElementById("season").textContent = data.season;
   document.getElementById("year").textContent = data.year;
+  document.getElementById("ritual").textContent = data.ritual;
+  document.getElementById("window").textContent = data.window;
 
   requestAnimationFrame(() => {
     document.querySelector('[data-fill="love"]').style.width = `${data.values.love}%`;
@@ -287,15 +372,56 @@ function renderReading(data) {
     document.getElementById("timingN").textContent = `${data.values.timing}`;
   });
 
-  box.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (scroll) box.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function shareUrl(payload) {
+  const params = new URLSearchParams();
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
+  return `${window.location.origin}${window.location.pathname}?${params.toString()}#reading`;
+}
+
+function hydrateFromQuery(form) {
+  const params = new URLSearchParams(window.location.search);
+  if (![...params.keys()].length) return;
+  ["name", "place", "date", "time", "question"].forEach((key) => {
+    if (params.get(key) && form.elements[key]) form.elements[key].value = params.get(key);
+  });
+  if (params.get("date") && params.get("name")) {
+    const payload = Object.fromEntries(new FormData(form).entries());
+    lastPayload = payload;
+    renderReading(readingFrom(payload), false);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   paintSky(document.getElementById("stars"));
+  renderToday();
   const form = document.getElementById("chart");
+  hydrateFromQuery(form);
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const payload = Object.fromEntries(new FormData(form).entries());
+    lastPayload = payload;
+    history.replaceState(null, "", shareUrl(payload));
     renderReading(readingFrom(payload));
+  });
+
+  document.getElementById("shareBtn").addEventListener("click", async () => {
+    if (!lastPayload) return;
+    const url = shareUrl(lastPayload);
+    try {
+      await navigator.clipboard.writeText(url);
+      const status = document.getElementById("shareStatus");
+      status.hidden = false;
+      setTimeout(() => {
+        status.hidden = true;
+      }, 2200);
+    } catch {
+      window.prompt("Copy this reading link:", url);
+    }
   });
 });

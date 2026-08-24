@@ -95,6 +95,11 @@ a {
   color: var(--mist);
 }
 
+.nav-links {
+  display: flex;
+  gap: 1.4rem;
+}
+
 .nav a {
   text-decoration: none;
   border-bottom: 1px solid transparent;
@@ -104,6 +109,70 @@ a {
 .nav a:hover {
   color: var(--paper);
   border-bottom-color: var(--gold);
+}
+
+.today {
+  padding: 0 6vw 8vh;
+  max-width: 52rem;
+  animation: rise 1s ease 0.35s both;
+}
+
+.today-kicker {
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.6rem;
+}
+
+.today h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.today-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.4rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+
+.today-label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin-bottom: 0.35rem;
+}
+
+.today-meta strong {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.25rem;
+  font-style: italic;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.btn-ghost:hover {
+  background: rgba(243, 234, 216, 0.06);
+  border-color: var(--gold);
+}
+
+.share-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
 .hero {
@@ -400,13 +469,17 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .nav, .hero, .reading, .method, .foot {
+  .nav, .hero, .today, .reading, .method, .foot {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
   }
 
   .brand {
     font-size: clamp(3.6rem, 18vw, 6.4rem);
+  }
+
+  .today-meta {
+    grid-template-columns: 1fr;
   }
 
   .bar {
